@@ -8,10 +8,10 @@
 
   <meta
     name="description"
-    content="হারানো জিনিস, ফিরে পাওয়ার সহজ পথ। Khuje Pao বাংলাদেশের Lost & Found platform."
+    content="হারানো জিনিস, ফিরে পাওয়ার সহজ পথ।"
   >
 
-  <meta name="theme-color" content="#0b6b3a">
+  <meta name="theme-color" content="#087f42">
 
   <style>
     * {
@@ -28,59 +28,88 @@
         BlinkMacSystemFont,
         "Noto Sans Bengali",
         sans-serif;
-      background:
-        linear-gradient(145deg, #f4fff8, #ffffff);
+      background: #f5faf7;
       color: #17231c;
-      display: flex;
-      align-items: center;
-      justify-content: center;
       padding: 20px;
     }
 
-    .app {
+    .container {
       width: 100%;
       max-width: 520px;
-      background: rgba(255,255,255,.92);
-      border: 1px solid rgba(11,107,58,.12);
-      border-radius: 28px;
-      padding: 32px 24px;
+      margin: 0 auto;
+    }
+
+    .header {
       text-align: center;
-      box-shadow:
-        0 20px 60px rgba(0,0,0,.08);
+      padding: 35px 10px 25px;
     }
 
     .logo {
-      width: 82px;
-      height: 82px;
-      border-radius: 24px;
+      width: 78px;
+      height: 78px;
+      border-radius: 22px;
       object-fit: cover;
-      margin-bottom: 18px;
+      margin-bottom: 15px;
     }
 
     h1 {
-      font-size: 32px;
-      margin-bottom: 8px;
       color: #075c32;
+      font-size: 32px;
     }
 
     .tagline {
-      color: #607066;
-      font-size: 16px;
-      margin-bottom: 28px;
+      color: #66736b;
+      margin-top: 6px;
     }
 
-    .buttons {
-      display: grid;
-      gap: 12px;
+    .card {
+      background: #ffffff;
+      border: 1px solid #e1ebe5;
+      border-radius: 24px;
+      padding: 22px;
+      margin-bottom: 16px;
+      box-shadow: 0 10px 35px rgba(0, 0, 0, .06);
+    }
+
+    .card h2 {
+      font-size: 21px;
+      margin-bottom: 18px;
+    }
+
+    .field {
+      margin-bottom: 13px;
+    }
+
+    label {
+      display: block;
+      font-size: 14px;
+      font-weight: 700;
+      margin-bottom: 6px;
+    }
+
+    input {
+      width: 100%;
+      padding: 14px;
+      border: 1px solid #d4dfd8;
+      border-radius: 14px;
+      outline: none;
+      font-size: 15px;
+      background: #fbfdfc;
+    }
+
+    input:focus {
+      border-color: #087f42;
     }
 
     button {
+      width: 100%;
       border: 0;
-      border-radius: 16px;
-      padding: 15px 18px;
-      font-size: 16px;
+      border-radius: 14px;
+      padding: 14px;
+      font-size: 15px;
       font-weight: 700;
       cursor: pointer;
+      margin-top: 8px;
     }
 
     .primary {
@@ -89,35 +118,80 @@
     }
 
     .secondary {
-      background: #eaf7ef;
+      background: #eaf6ef;
       color: #075c32;
     }
 
-    .status {
-      margin-top: 24px;
+    .danger {
+      background: #fff0f0;
+      color: #b42318;
+    }
+
+    .switch {
+      text-align: center;
+      margin-top: 16px;
+      color: #087f42;
+      font-weight: 700;
+      cursor: pointer;
+    }
+
+    .message {
+      padding: 12px;
+      border-radius: 12px;
+      background: #f3f6f4;
+      margin-top: 12px;
+      font-size: 14px;
+      text-align: center;
+      display: none;
+    }
+
+    .message.show {
+      display: block;
+    }
+
+    .user-box {
+      background: #edf8f1;
       padding: 14px;
       border-radius: 14px;
-      background: #f4f7f5;
-      color: #66736b;
-      font-size: 14px;
+      margin-bottom: 14px;
+      word-break: break-word;
+    }
+
+    .hidden {
+      display: none !important;
+    }
+
+    .features {
+      display: grid;
+      gap: 10px;
+    }
+
+    .feature {
+      padding: 14px;
+      background: #f7faf8;
+      border-radius: 14px;
     }
 
     footer {
-      margin-top: 24px;
+      text-align: center;
+      color: #7a857e;
       font-size: 13px;
-      color: #7b877f;
+      padding: 20px 0;
     }
   </style>
 </head>
 
 <body>
 
-  <main class="app">
+<div class="container">
+
+  <!-- HEADER -->
+  <header class="header">
 
     <img
       class="logo"
       src="https://pockethostbd.github.io/drive-one/picture/khuje-pao-logo.png"
-      alt="Khuje Pao Logo"
+      alt="Khuje Pao"
       onerror="this.style.display='none'"
     >
 
@@ -127,42 +201,272 @@
       হারানো জিনিস, ফিরে পাওয়ার সহজ পথ।
     </p>
 
-    <div class="buttons">
+  </header>
 
-      <button class="primary" onclick="comingSoon()">
-        🔎 হারানো জিনিস খুঁজুন
+
+  <!-- AUTH AREA -->
+  <section id="authArea">
+
+    <!-- LOGIN -->
+    <div id="loginCard" class="card">
+
+      <h2>🔐 Login করুন</h2>
+
+      <form id="loginForm">
+
+        <div class="field">
+          <label for="loginEmail">
+            Email
+          </label>
+
+          <input
+            id="loginEmail"
+            type="email"
+            placeholder="আপনার Email"
+            autocomplete="email"
+            required
+          >
+        </div>
+
+        <div class="field">
+          <label for="loginPassword">
+            Password
+          </label>
+
+          <input
+            id="loginPassword"
+            type="password"
+            placeholder="আপনার Password"
+            autocomplete="current-password"
+            required
+          >
+        </div>
+
+        <button
+          type="submit"
+          class="primary"
+        >
+          Login
+        </button>
+
+      </form>
+
+      <button
+        type="button"
+        class="secondary"
+        onclick="resetPassword()"
+      >
+        Password ভুলে গেছেন?
       </button>
 
-      <button class="secondary" onclick="comingSoon()">
-        📦 হারানো জিনিস রিপোর্ট করুন
-      </button>
+      <div
+        id="loginMessage"
+        class="message"
+      ></div>
 
-      <button class="secondary" onclick="comingSoon()">
-        🤝 পাওয়া জিনিস রিপোর্ট করুন
-      </button>
+      <div
+        class="switch"
+        onclick="showRegister()"
+      >
+        নতুন Account তৈরি করুন
+      </div>
 
-      <button class="secondary" onclick="comingSoon()">
-        🔐 Login / Register
+    </div>
+
+
+    <!-- REGISTER -->
+    <div
+      id="registerCard"
+      class="card hidden"
+    >
+
+      <h2>📝 Account তৈরি করুন</h2>
+
+      <form id="registerForm">
+
+        <div class="field">
+          <label for="registerEmail">
+            Email
+          </label>
+
+          <input
+            id="registerEmail"
+            type="email"
+            placeholder="আপনার Email"
+            autocomplete="email"
+            required
+          >
+        </div>
+
+        <div class="field">
+          <label for="registerPassword">
+            Password
+          </label>
+
+          <input
+            id="registerPassword"
+            type="password"
+            placeholder="কমপক্ষে ৬ অক্ষর"
+            autocomplete="new-password"
+            required
+          >
+        </div>
+
+        <div class="field">
+          <label for="registerConfirmPassword">
+            Password আবার লিখুন
+          </label>
+
+          <input
+            id="registerConfirmPassword"
+            type="password"
+            placeholder="Password আবার লিখুন"
+            autocomplete="new-password"
+            required
+          >
+        </div>
+
+        <button
+          type="submit"
+          class="primary"
+        >
+          Account তৈরি করুন
+        </button>
+
+      </form>
+
+      <div
+        id="registerMessage"
+        class="message"
+      ></div>
+
+      <div
+        class="switch"
+        onclick="showLogin()"
+      >
+        আগে থেকেই Account আছে? Login করুন
+      </div>
+
+    </div>
+
+  </section>
+
+
+  <!-- LOGGED IN AREA -->
+  <section
+    id="userArea"
+    class="hidden"
+  >
+
+    <div class="card">
+
+      <h2>👋 স্বাগতম!</h2>
+
+      <div
+        id="userInfo"
+        class="user-box"
+      >
+        Loading...
+      </div>
+
+      <button
+        id="logoutBtn"
+        class="danger"
+      >
+        Logout
       </button>
 
     </div>
 
-    <div class="status">
-      Khuje Pao এখন সেটআপ করা হচ্ছে।
-      শীঘ্রই সম্পূর্ণ Lost & Found system চালু হবে।
+
+    <div class="card">
+
+      <h2>📦 Khuje Pao</h2>
+
+      <div class="features">
+
+        <div class="feature">
+          🔎 হারানো জিনিস খুঁজুন
+        </div>
+
+        <div class="feature">
+          📢 হারানো জিনিস রিপোর্ট করুন
+        </div>
+
+        <div class="feature">
+          🤝 পাওয়া জিনিস রিপোর্ট করুন
+        </div>
+
+        <div class="feature">
+          💬 নিরাপদভাবে যোগাযোগ করুন
+        </div>
+
+      </div>
+
     </div>
 
-    <footer>
-      © 2026 Khuje Pao · Bangladesh
-    </footer>
+  </section>
 
-  </main>
 
-  <script>
-    function comingSoon() {
-      alert("এই ফিচারটি পরবর্তী ধাপে চালু করা হবে।");
-    }
-  </script>
+  <footer>
+    © 2026 Khuje Pao · Bangladesh
+  </footer>
+
+</div>
+
+
+<script>
+
+  const loginCard = document.getElementById("loginCard");
+  const registerCard = document.getElementById("registerCard");
+
+  const loginMessage =
+    document.getElementById("loginMessage");
+
+  const registerMessage =
+    document.getElementById("registerMessage");
+
+
+  function showLogin() {
+
+    loginCard.classList.remove("hidden");
+    registerCard.classList.add("hidden");
+
+    loginMessage.classList.remove("show");
+    registerMessage.classList.remove("show");
+  }
+
+
+  function showRegister() {
+
+    loginCard.classList.add("hidden");
+    registerCard.classList.remove("hidden");
+
+    loginMessage.classList.remove("show");
+    registerMessage.classList.remove("show");
+  }
+
+
+  window.showLogin = showLogin;
+  window.showRegister = showRegister;
+
+
+  function showMessage(element, text) {
+
+    element.textContent = text;
+    element.classList.add("show");
+  }
+
+
+  window.showMessage = showMessage;
+
+</script>
+
+
+<script
+  type="module"
+  src="./js/app.js"
+></script>
 
 </body>
 </html>
