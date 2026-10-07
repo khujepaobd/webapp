@@ -8,7 +8,18 @@ import {
 
 import { auth } from "./firebase-config.js";
 
+
+/* =========================================================
+   KHUJE PAO — FIREBASE AUTHENTICATION
+   ========================================================= */
+
+
 const $ = (id) => document.getElementById(id);
+
+
+/* =========================================================
+   ELEMENTS
+   ========================================================= */
 
 const loginForm = $("loginForm");
 const registerForm = $("registerForm");
@@ -26,241 +37,419 @@ const userInfo = $("userInfo");
 const logoutBtn = $("logoutBtn");
 
 
+/* =========================================================
+   MESSAGE HELPER
+   ========================================================= */
+
 function showMessage(element, text, type = "info") {
+
   if (!element) return;
 
   element.textContent = text;
   element.classList.add("show");
 
-  element.style.background =
-    type === "success" ? "#eaf8ef" :
-    type === "error" ? "#fff0f0" :
-    "#f3f6f4";
+  if (type === "success") {
 
-  element.style.color =
-    type === "success" ? "#087f42" :
-    type === "error" ? "#b42318" :
-    "#536158";
+    element.style.background = "#eaf8ef";
+    element.style.color = "#087f42";
+
+  } else if (type === "error") {
+
+    element.style.background = "#fff0f0";
+    element.style.color = "#b42318";
+
+  } else {
+
+    element.style.background = "#f3f6f4";
+    element.style.color = "#536158";
+
+  }
 }
 
+
+/* =========================================================
+   CLEAR MESSAGES
+   ========================================================= */
 
 function clearMessages() {
-  loginMessage?.classList.remove("show");
-  registerMessage?.classList.remove("show");
+
+  if (loginMessage) {
+    loginMessage.classList.remove("show");
+  }
+
+  if (registerMessage) {
+    registerMessage.classList.remove("show");
+  }
 }
 
+
+/* =========================================================
+   LOGIN SCREEN
+   ========================================================= */
 
 function showLogin() {
-  loginCard?.classList.remove("hidden");
-  registerCard?.classList.add("hidden");
+
+  if (loginCard) {
+    loginCard.classList.remove("hidden");
+  }
+
+  if (registerCard) {
+    registerCard.classList.add("hidden");
+  }
+
   clearMessages();
 }
 
+
+/* =========================================================
+   REGISTER SCREEN
+   ========================================================= */
 
 function showRegister() {
-  loginCard?.classList.add("hidden");
-  registerCard?.classList.remove("hidden");
+
+  if (loginCard) {
+    loginCard.classList.add("hidden");
+  }
+
+  if (registerCard) {
+    registerCard.classList.remove("hidden");
+  }
+
   clearMessages();
 }
 
+
+/* Make functions available to HTML */
 
 window.showLogin = showLogin;
 window.showRegister = showRegister;
 
 
-/* =========================
-   REGISTER
-========================= */
+/* =========================================================
+   FIREBASE ERROR TRANSLATOR
+   ========================================================= */
 
-registerForm?.addEventListener("submit", async (event) => {
+function getFirebaseErrorMessage(error) {
 
-  event.preventDefault();
+  const code = error?.code || "";
 
-  const email = $("registerEmail")?.value.trim();
-  const password = $("registerPassword")?.value;
-  const confirmPassword =
-    $("registerConfirmPassword")?.value;
+  switch (code) {
 
-  if (!email || !password || !confirmPassword) {
-    showMessage(
-      registerMessage,
-      "সব তথ্য পূরণ করুন।",
-      "error"
-    );
-    return;
+    case "auth/email-already-in-use":
+      return "এই Email দিয়ে ইতিমধ্যে একটি Account রয়েছে।";
+
+    case "auth/invalid-email":
+      return "Email address সঠিক নয়।";
+
+    case "auth/weak-password":
+      return "Password খুব দুর্বল। আরও শক্তিশালী Password ব্যবহার করুন।";
+
+    case "auth/password-does-not-meet-requirements":
+      return "আপনার Password Firebase-এর Password Policy পূরণ করছে না।";
+
+    case "auth/operation-not-allowed":
+      return "Firebase Console-এ Email/Password Authentication চালু নেই।";
+
+    case "auth/admin-restricted-operation":
+      return "এই Firebase Project-এ user registration নিষিদ্ধ করা হয়েছে।";
+
+    case "auth/too-many-requests":
+      return "অনেকবার চেষ্টা করা হয়েছে। কিছুক্ষণ পরে আবার চেষ্টা করুন।";
+
+    case "auth/network-request-failed":
+      return "Internet connection সমস্যা হয়েছে।";
+
+    case "auth/invalid-api-key":
+      return "Firebase API configuration সঠিক নয়।";
+
+    case "auth/app-not-authorized":
+      return "এই website Firebase Authentication-এর জন্য অনুমোদিত নয়।";
+
+    case "auth/unauthorized-domain":
+      return "এই domain Firebase Authentication-এর Authorized Domains-এ নেই।";
+
+    case "auth/internal-error":
+      return "Firebase-এর একটি internal error হয়েছে।";
+
+    default:
+      return "Firebase একটি অজানা error দিয়েছে।";
   }
-
-  if (password !== confirmPassword) {
-    showMessage(
-      registerMessage,
-      "দুইটি Password একই নয়।",
-      "error"
-    );
-    return;
-  }
-
-  if (password.length < 6) {
-    showMessage(
-      registerMessage,
-      "Password কমপক্ষে ৬ অক্ষরের হতে হবে।",
-      "error"
-    );
-    return;
-  }
-
-  try {
-
-    showMessage(
-      registerMessage,
-      "Account তৈরি হচ্ছে..."
-    );
-
-    const result =
-      await createUserWithEmailAndPassword(
-        auth,
-        email,
-        password
-      );
-
-    console.log(
-      "New Firebase user:",
-      result.user.uid
-    );
-
-    showMessage(
-      registerMessage,
-      "Account সফলভাবে তৈরি হয়েছে।",
-      "success"
-    );
-
-  } } catch (error) {
-
-  console.error("Firebase Register Error:", error);
-
-  let text =
-    `Account তৈরি করা যায়নি।
-
-Error Code: ${error.code}
-
-${error.message || ""}`;
-
-  showMessage(
-    registerMessage,
-    text,
-    "error"
-  );
 }
-    if (error.code === "auth/email-already-in-use") {
-      text = "এই Email দিয়ে আগে থেকেই Account আছে।";
-    }
-
-    if (error.code === "auth/invalid-email") {
-      text = "Email ঠিক নয়।";
-    }
-
-    if (error.code === "auth/weak-password") {
-      text = "Password আরও শক্তিশালী দিন।";
-    }
-
-    showMessage(
-      registerMessage,
-      text,
-      "error"
-    );
-  }
-
-});
 
 
-/* =========================
-   LOGIN
-========================= */
+/* =========================================================
+   REGISTER
+   ========================================================= */
 
-loginForm?.addEventListener("submit", async (event) => {
+if (registerForm) {
 
-  event.preventDefault();
+  registerForm.addEventListener(
+    "submit",
+    async (event) => {
 
-  const email = $("loginEmail")?.value.trim();
-  const password = $("loginPassword")?.value;
+      event.preventDefault();
 
-  if (!email || !password) {
-    showMessage(
-      loginMessage,
-      "Email এবং Password দিন।",
-      "error"
-    );
-    return;
-  }
 
-  try {
+      const email =
+        $("registerEmail")?.value.trim();
 
-    showMessage(
-      loginMessage,
-      "Login হচ্ছে..."
-    );
+      const password =
+        $("registerPassword")?.value;
 
-    const result =
-      await signInWithEmailAndPassword(
-        auth,
-        email,
-        password
+      const confirmPassword =
+        $("registerConfirmPassword")?.value;
+
+
+      /* -------------------------
+         VALIDATION
+         ------------------------- */
+
+      if (!email || !password || !confirmPassword) {
+
+        showMessage(
+          registerMessage,
+          "সব তথ্য পূরণ করুন।",
+          "error"
+        );
+
+        return;
+      }
+
+
+      if (password !== confirmPassword) {
+
+        showMessage(
+          registerMessage,
+          "দুইটি Password একই নয়।",
+          "error"
+        );
+
+        return;
+      }
+
+
+      if (password.length < 6) {
+
+        showMessage(
+          registerMessage,
+          "Password কমপক্ষে ৬ অক্ষরের হতে হবে।",
+          "error"
+        );
+
+        return;
+      }
+
+
+      /* -------------------------
+         START REGISTER
+         ------------------------- */
+
+      showMessage(
+        registerMessage,
+        "Account তৈরি হচ্ছে..."
       );
 
-    console.log(
-      "Logged in user:",
-      result.user.uid
-    );
 
-    showMessage(
-      loginMessage,
-      "সফলভাবে Login হয়েছে।",
-      "success"
-    );
+      try {
 
-  } catch (error) {
+        const userCredential =
+          await createUserWithEmailAndPassword(
+            auth,
+            email,
+            password
+          );
 
-    console.error(error);
 
-    let text = "Login করা যায়নি।";
+        const user =
+          userCredential.user;
 
-    if (
-      error.code === "auth/invalid-credential" ||
-      error.code === "auth/invalid-login-credentials"
-    ) {
-      text = "Email অথবা Password সঠিক নয়।";
+
+        console.log(
+          "Khuje Pao Firebase User Created:",
+          user.uid
+        );
+
+
+        showMessage(
+          registerMessage,
+          "✅ Account সফলভাবে তৈরি হয়েছে।",
+          "success"
+        );
+
+
+        /*
+         Firebase নতুন user-কে
+         automatically sign-in করে।
+        */
+
+      } catch (error) {
+
+        console.error(
+          "KHUJE PAO REGISTER ERROR",
+          error
+        );
+
+
+        const friendlyMessage =
+          getFirebaseErrorMessage(error);
+
+
+        /*
+         Debug information
+         */
+
+        const debugText =
+          `${friendlyMessage}
+
+Error Code: ${error?.code || "unknown"}
+
+Error Message: ${error?.message || "No message"}`;
+
+
+        showMessage(
+          registerMessage,
+          debugText,
+          "error"
+        );
+
+      }
+
     }
+  );
 
-    if (error.code === "auth/too-many-requests") {
-      text =
-        "অনেকবার চেষ্টা করা হয়েছে। কিছুক্ষণ পরে আবার চেষ্টা করুন।";
+}
+
+
+/* =========================================================
+   LOGIN
+   ========================================================= */
+
+if (loginForm) {
+
+  loginForm.addEventListener(
+    "submit",
+    async (event) => {
+
+      event.preventDefault();
+
+
+      const email =
+        $("loginEmail")?.value.trim();
+
+      const password =
+        $("loginPassword")?.value;
+
+
+      /* -------------------------
+         VALIDATION
+         ------------------------- */
+
+      if (!email || !password) {
+
+        showMessage(
+          loginMessage,
+          "Email এবং Password দিন।",
+          "error"
+        );
+
+        return;
+      }
+
+
+      showMessage(
+        loginMessage,
+        "Login হচ্ছে..."
+      );
+
+
+      try {
+
+        const userCredential =
+          await signInWithEmailAndPassword(
+            auth,
+            email,
+            password
+          );
+
+
+        const user =
+          userCredential.user;
+
+
+        console.log(
+          "Khuje Pao Login Success:",
+          user.uid
+        );
+
+
+        showMessage(
+          loginMessage,
+          "✅ সফলভাবে Login হয়েছে।",
+          "success"
+        );
+
+
+      } catch (error) {
+
+        console.error(
+          "KHUJE PAO LOGIN ERROR",
+          error
+        );
+
+
+        const friendlyMessage =
+          getFirebaseErrorMessage(error);
+
+
+        const debugText =
+          `${friendlyMessage}
+
+Error Code: ${error?.code || "unknown"}
+
+Error Message: ${error?.message || "No message"}`;
+
+
+        showMessage(
+          loginMessage,
+          debugText,
+          "error"
+        );
+
+      }
+
     }
+  );
 
-    showMessage(
-      loginMessage,
-      text,
-      "error"
-    );
-  }
-
-});
+}
 
 
-/* =========================
+/* =========================================================
    PASSWORD RESET
-========================= */
+   ========================================================= */
 
 window.resetPassword = async function () {
 
-  const email = $("loginEmail")?.value.trim();
+  const email =
+    $("loginEmail")?.value.trim();
+
 
   if (!email) {
+
     showMessage(
       loginMessage,
       "প্রথমে আপনার Email লিখুন।",
       "error"
     );
+
     return;
   }
+
+
+  showMessage(
+    loginMessage,
+    "Password reset email পাঠানো হচ্ছে..."
+  );
+
 
   try {
 
@@ -269,77 +458,152 @@ window.resetPassword = async function () {
       email
     );
 
+
     showMessage(
       loginMessage,
-      "Password reset email পাঠানো হয়েছে।",
+      "✅ Password reset email পাঠানো হয়েছে।",
       "success"
     );
 
+
   } catch (error) {
 
-    console.error(error);
+    console.error(
+      "KHUJE PAO PASSWORD RESET ERROR",
+      error
+    );
+
+
+    const friendlyMessage =
+      getFirebaseErrorMessage(error);
+
+
+    const debugText =
+      `${friendlyMessage}
+
+Error Code: ${error?.code || "unknown"}
+
+Error Message: ${error?.message || "No message"}`;
+
 
     showMessage(
       loginMessage,
-      "Password reset email পাঠানো যায়নি।",
+      debugText,
       "error"
     );
+
   }
 
 };
 
 
-/* =========================
+/* =========================================================
    LOGOUT
-========================= */
+   ========================================================= */
 
-logoutBtn?.addEventListener(
-  "click",
-  async () => {
+if (logoutBtn) {
 
-    try {
+  logoutBtn.addEventListener(
+    "click",
+    async () => {
 
-      await signOut(auth);
+      try {
 
-    } catch (error) {
+        await signOut(auth);
 
-      console.error(error);
+      } catch (error) {
 
-      alert("Logout করা যায়নি।");
+        console.error(
+          "KHUJE PAO LOGOUT ERROR",
+          error
+        );
+
+        alert(
+          "Logout করা যায়নি।"
+        );
+
+      }
+
+    }
+  );
+
+}
+
+
+/* =========================================================
+   AUTH STATE
+   ========================================================= */
+
+onAuthStateChanged(
+  auth,
+  (user) => {
+
+    console.log(
+      "Khuje Pao Auth State:",
+      user
+    );
+
+
+    if (user) {
+
+      /*
+       User logged in
+      */
+
+      if (authArea) {
+        authArea.classList.add("hidden");
+      }
+
+      if (userArea) {
+        userArea.classList.remove("hidden");
+      }
+
+
+      if (userInfo) {
+
+        const email =
+          user.email ||
+          "Anonymous User";
+
+        userInfo.textContent =
+          `Email: ${email}
+
+UID: ${user.uid}`;
+
+      }
+
+
+    } else {
+
+      /*
+       User logged out
+      */
+
+      if (authArea) {
+        authArea.classList.remove("hidden");
+      }
+
+      if (userArea) {
+        userArea.classList.add("hidden");
+      }
+
+      showLogin();
+
     }
 
   }
 );
 
 
-/* =========================
-   AUTH STATE
-========================= */
+/* =========================================================
+   STARTUP CHECK
+   ========================================================= */
 
-onAuthStateChanged(
-  auth,
-  (user) => {
+console.log(
+  "Khuje Pao Firebase Authentication initialized."
+);
 
-    if (user) {
-
-      authArea?.classList.add("hidden");
-      userArea?.classList.remove("hidden");
-
-      if (userInfo) {
-
-        userInfo.textContent =
-          `Email: ${user.email || "Anonymous User"}
-UID: ${user.uid}`;
-
-      }
-
-    } else {
-
-      authArea?.classList.remove("hidden");
-      userArea?.classList.add("hidden");
-
-      showLogin();
-    }
-
-  }
+console.log(
+  "Firebase Auth object:",
+  auth
 );
