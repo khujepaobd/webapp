@@ -133,12 +133,23 @@ registerForm?.addEventListener("submit", async (event) => {
       "success"
     );
 
-  } catch (error) {
+  } } catch (error) {
 
-    console.error(error);
+  console.error("Firebase Register Error:", error);
 
-    let text = "Account তৈরি করা যায়নি।";
+  let text =
+    `Account তৈরি করা যায়নি।
 
+Error Code: ${error.code}
+
+${error.message || ""}`;
+
+  showMessage(
+    registerMessage,
+    text,
+    "error"
+  );
+}
     if (error.code === "auth/email-already-in-use") {
       text = "এই Email দিয়ে আগে থেকেই Account আছে।";
     }
